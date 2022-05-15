@@ -50,7 +50,14 @@ background: #c7c7c7;
 									<div class="dropdown-arrow white w-icon-dropdown-toggle"></div>
 									<div>Техническое</div>
 								</div>
-								<nav class="w-dropdown-list"><a href="#wallets" class="dropdown-link white w-dropdown-link">Кошельки</a><a href="https://nationalbitcoin.org/stats.html" target="_blank" class="dropdown-link white w-dropdown-link">Статистика раздачи</a><a href="#4miners" class="dropdown-link white w-dropdown-link">Майнерам</a><a href="#4devs" class="dropdown-link white w-dropdown-link">Разработчикам</a><a href="https://russian-explorer.nationalbitcoin.org/blocks" target="_blank" class="dropdown-link white w-dropdown-link">Обозреватель блоков</a></nav>
+								<nav class="w-dropdown-list">
+									<a href="#wallets" class="dropdown-link white w-dropdown-link">Кошельки</a>
+									<a href="stats_ru.html" target="_blank" class="dropdown-link white w-dropdown-link">Статистика раздачи</a>
+									<a href="#4miners" class="dropdown-link white w-dropdown-link">Майнерам</a>
+									<a href="#4devs" class="dropdown-link white w-dropdown-link">Разработчикам</a>
+									<a href="https://russian-explorer.nationalbitcoin.org/blocks" target="_blank" class="dropdown-link white w-dropdown-link">Обозреватель блоков</a>
+									<a href="https://github.com/nationalbitcoin/russianbitcoin/tree/master" target="_blank" class="dropdown-link white w-dropdown-link">GitHub</a>
+								</nav>
 							</div>
 						</nav>
 						<div class="menu-button-white w-nav-button">
@@ -257,30 +264,54 @@ background: #c7c7c7;
 						<div class="gray-title">Майнерам</div>
 					</div>
 					<div class="_80-percent-column">
-						<div data-w-id="eb69f7b2-c641-4114-2008-f8eeef49ed55" style="opacity:0" class="bottom-border">
-							<h4 class="h4 no-border">Инструкция для майнинга в соло-режиме:</h4>
-							<div class="small-title">1. Скачайте кошелек Russian Bitcoin Core: <a href="https://russian.nationalbitcoin.org/wallets/">Скачать</a></div>
-							<div class="small-title">2. Скачайте Russian Bitcoin Solo Mining Proxy: <a href="https://github.com/nationalbitcoin/solo-mining-proxy/archive/master.zip" target="_blank">Скачать</a></div>
-							<div class="small-title">3. Запустите <strong>npm install</strong> для загрузки зависимостей, затем обновите файл config.js, указав параметры Russian Bitcoin RPC интерфейса и ваш rubtc адрес для получения вознаграждения. Обратите внимание, что поддерживаются ТОЛЬКО <strong>bech32 rubtc адреса</strong>.</div>
-							<div class="small-title">4. Опционально, вы можете изменить настройки Stratum сервера, такие как порт, размер <strong>extranonce</strong> и <strong>solution difficulty</strong>.</div>
-							<div class="small-title">5. Для старта Solo Mining Proxy сервера запустите main.js файл командой <strong>node main.js</strong>.</div>
-							<div class="small-title">6. Пропишите в вашем устройстве для майнинга в качестве пула IP-адрес и порт прокси, например, <strong>1.2.3.4:3333</strong>, где <strong>1.2.3.4</strong> – IP-адрес вашего <strong>Solo Mining Proxy</strong> сервера. Имя пользователя и пароль игнорируются, укажите любые произвольные значения.</div>
-						</div>
-						<div data-w-id="eb69f7b2-c641-4114-2008-f8eeef49ed6e" style="opacity:0" class="bottom-border">
-							<h4 class="h4 no-border">Инструкция для майнинга в составе пула</h4>
-							<div class="small-title">1. В настройках пулов вашего майнера пропишите адрес P2Pool пула <strong>stratum+tcp://sha256.p2p-spb.xyz:6353</strong></div>
-							<div class="small-title">2. В качестве логина (Worker) используйте ваш RuBTC адрес для выплаты вознаграждения, например <strong>rubtcm1qye3s6ph9xlhm9e655ww5upajjhw3gwafz8k2df</strong>.</div>
-							<div class="small-title">3. В качестве пароля (Password) впишите <strong>RUBTC</strong>.</div>
-							<div class="small-title">4. Статистику майнинга в пуле P2Pool можно смотреть по адересу: <a href="http://sha256.p2p-spb.xyz:6353/static/" target="_blank">http://sha256.p2p-spb.xyz:6353/static/</a></div>
-						</div>
 						<div data-w-id="9261201c-75b9-bd5e-b106-c8a4f98530cc" style="opacity:0" class="bottom-border">
 							<h4 class="h4 no-border">Алгоритм расчета вознаграждения за блок</h4>
-							<div class="small-title">Сложность сети корректируется на каждом новом блоке для того, чтобы наиболее справедливым образом отражать изменение вознаграждения и нивелировать существенные перекосы сложности, возникающие при резком увеличении или оттоке вычислительной мощности сети.</div>
 							<div class="small-title">
-								Общий принцип таков: при изменении сложности в 16 раз награда изменяется вдвое. Соответственно, при увеличении мощности сети награда за блок будет постепенно снижаться, а при уменьшении мощности сети — увеличиваться; но она не сможет превысить максимально возможный предел в 25 монет.
+								Основная часть награды за блок считается по формуле 12.5 &gt;&gt; (n / 100000), где n - количество блоков в цепи, &gt;&gt; - сдвиг, а / - целочисленное деление. Для генерации proof-of-stake блока майнеры должны найти в своём кошельке вывод, который удовлетворяет следующему условию:
 								<br/>
+								‍
+								<br/>
+								hash(nStakeModifier + blockFrom.nTime + txPrev.vout.hash + txPrev.vout.n + nTime) &lt; bnTarget * nWeight
+								<br/>
+								Знак + означает конкатенацию значений, сериализованных в виде вектора байтов.
+								<br/>
+								<strong>
+									<br/>
+									Хэшируемые параметры:
+								</strong>
+								<br/>
+								nStakeModifier — модификатор, рассчитываемый с использованием аккумулированной энтропии. Предназначен для устранения возможности расчета хэшей для выходов, которые ещё не набрали достаточно подтверждений. 
+								<br/>
+								Модификатор считается с использованием хэшей заголовков предыдущих блоков.
+								<br/>
+								blockFrom.nTime — время создания блока, в котором инпут был подтверждён.txPrev.vout.hash — хэш транзакции, при в которой выход был создан.
+								<br/>
+								txPrev.vout.n — номер выхода в транзакции.
+								<br/>
+								nTime — Текущий unix timestamp.
+								<br/>
+								‍
+								<br/>
+								Используются именно эти параметры, поскольку источник их происхождения прозрачен и доступен для проверки всем желающим. Нельзя использовать, к примеру, хэш блока или хэш самой создаваемой транзакции, потому что это привело бы вырождению системы в proof-of-work сценарий.
+								<br/>
+								<br/>
+								<em>Итак, правая часть неравенства является произведением текущей цели (можно посчитать как максимальная цель делённое на текущую сложность) на вес выхода. А вес определяется как произведение суммы выхода в сатоши на его возраст в секундах.</em>
+								<br/>
+								<strong>
+									<br/>
+									Дополнительные требования:
+								</strong>
+								<br/>
+								Транзакция обязана набрать как минимум 25 подтверждений, прежде чем её можно будет использовать для поиска решений.Выход может содержать P2PK, P2PKH либо P2CS скрипт. Любые иные выходы не годятся и игнорируются клиентом при поиске решений.В случае, если майнер ищет решения сам, награда делится пропорционально между ним и 10 псевдослучайно выбранными участниками консенсуса. Это сделано для более честного распределения награды и дополнительного стимулирования к участию. Награды, находимые с использованием P2CS выходов, ни с кем не делятся и целиком принадлежат нашедшему блок.
+								<br/>
+								‍
+								<br/>
+								Помимо proof-of-stake, в качестве запасного варианта предусмотрен механизм proof-of-authority.
+								<br/>
+								PoA блоки создаются централизованно и имеют фиксированный вес, равный единице.Механизм proof-of-authority необходим на ранних этапах развертывания сети, пока нет достаточного количества пользователей с кошельками, содержащими инпуты, удовлетворяющие критериям proof-of-stake. В дальнейшем от него можно будет избавиться.В целях защиты участников сети от злоупотреблений, в случае конкуренции между PoA и PoS всегда выигрывает PoS блок. Это происходит, потому что для PoS блоков к сумме работы цепочки добавляется их тронет, а в случае PoA добавляется константа, равная 1. По этой причине любой PoS блок сможет победить цепочку, состоящую из миллионов PoA блоков.
+								<br/>
+								Иными словами, PoA не является провайдером безопасности, как таковым, и эта роль полностью принадлежит владельцам монет, участвующих в консенсусе proof-of-stake.
 							</div>
-							<a href="https://github.com/nationalbitcoin/russianbitcoin-block-reward-calc/archive/master.zip" data-w-id="b6ae411a-d003-0e3d-5d42-ec9d3ae42889" style="opacity:0" target="_blank" class="button w-button">Скачать скрипт расчета вознаграждения</a>
 						</div>
 					</div>
 				</section>
@@ -298,7 +329,7 @@ background: #c7c7c7;
 				</div>
 				<div class="notice">
 					<div class="expand">
-						<div class="bottom-border small"><a href="https://russian-explorer.nationalbitcoin.org/blocks" target="_blank">Обозреватель блоков</a><a href="https://nationalbitcoin.org/stats.html" target="_blank">Статистика раздачи</a><a href="https://github.com/nationalbitcoin/russianbitcoin/tree/master" target="_blank">GitHub</a><a href="https://nationalbitcoin.org/" target="_blank">National Bitcoin</a><a href="#wallets"></a><a href="licensing.html"></a><a href="http://webflow.com" target="_blank"></a></div>
+						<div class="bottom-border small">Используемая платформа: <a href="https://nationalbitcoin.org" target="_blank">National Bitcoin</a></div>
 					</div>
 					<a href="#1" class="link-block-2 w-inline-block"></a>
 				</div>
