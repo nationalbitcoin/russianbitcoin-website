@@ -14,7 +14,7 @@ $(document).ready(function(){
                     case ('transactions'):
                         $('#totalAmount').text((response.totalAmount*Math.pow(10, -8)).toFixed(3));
                         htmlString = '';
-                        for(let i = 0; i < response.totalParticipantsNumber; i++){
+                        for(let i = 0; i < response.transfers.length; i++){
                             let date = new Date(response.transfers[i].date);
                             let adr ='';
                             let month=['января', 'февраля', 'марта', 'апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
