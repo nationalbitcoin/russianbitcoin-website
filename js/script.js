@@ -1,4 +1,8 @@
 $(document).ready(function(){
+
+    htmlString = '';
+    offset = 0;
+
     function getData(link, type){
         $.ajax({
             url: link,
@@ -13,7 +17,7 @@ $(document).ready(function(){
                         break; 
                     case ('transactions'):
                         $('#totalAmount').text((response.totalAmount*Math.pow(10, -8)).toFixed(3));
-                        htmlString = '';
+                        
                         for(let i = 0; i < response.transfers.length; i++){
                             let date = new Date(response.transfers[i].date);
                             let adr ='';
@@ -40,23 +44,32 @@ $(document).ready(function(){
                             +response.transfers[i].transaction_id+'" target="_blank">See details</a></td></tr>';
                         }
                         $('tbody').html(htmlString);
-
-                        $('#table').DataTable({
-                            searching: false,
-                            ordering:  false,
-                            select: false,
-                            info: false,
-                            lengthChange: false,
-                            pageLength: 18,
-                            "dom": '<"row"t<"col-sm-3"><"col-sm-5 text-center"p><"col-sm-3">>',
-                            "oLanguage": {
-                                "oPaginate": {
-                                    "sNext": "&raquo;",
-                                    "sPrevious": "&laquo;",
-                                }
-                            }
-                        });
                         $('#left').text((18347513 - response.totalAmount*Math.pow(10, -8)).toLocaleString('ru-RU').replace(',', '.'));
+
+                        rows = response.transfers.length
+                        offset += rows
+                        if (rows == 1000) {
+                            // all is ok, next page...
+                            getData('https://prox.is/backend/api/v1/rubtc/get-transfers-info?limit=1000&offset=' + offset, 'transactions');
+                        } else {
+                            // the end...
+                            $('#table').DataTable({
+                                searching: false,
+                                ordering:  false,
+                                select: false,
+                                info: false,
+                                lengthChange: false,
+                                pageLength: 18,
+                                "dom": '<"row"t<"col-sm-3"><"col-sm-5 text-center"p><"col-sm-3">>',
+                                "oLanguage": {
+                                    "oPaginate": {
+                                        "sNext": "&raquo;",
+                                        "sPrevious": "&laquo;",
+                                    }
+                                }
+                            });
+                        }
+
                         break;
                 }
             }
