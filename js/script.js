@@ -50,7 +50,7 @@ $(document).ready(function(){
                         offset += rows
                         if (rows == 1000) {
                             // all is ok, next page...
-                            getData('https://prox.is/backend/api/v1/rubtc/get-transfers-info?limit=1000&offset=' + offset, 'transactions');
+                            getData('https://prox.is/backend/api/v1/rubtc/get-transfers-info?limit=1000&offset=0&coin=RUBTC' + offset, 'transactions');
                         } else {
                             // the end...
                             $('#table').DataTable({
@@ -77,6 +77,6 @@ $(document).ready(function(){
     }
 
     getData('https://prox.is/backend/api/v1/rubtc/rubtc-award-amount', 'reward');
-    getData('https://prox.is/backend/api/v1/rubtc/rubtc-distribution-participants-with-transfers', 'participants');
-    getData('https://prox.is/backend/api/v1/rubtc/get-transfers-info?limit=1000&offset=0', 'transactions');    
+    getData('https://prox.is/backend/api/v1/rubtc/distribution-participants-with-transfers?coin=RUBTC', 'participants');
+    getData('https://prox.is/backend/api/v1/rubtc/get-transfers-info?limit=1000&offset=0&coin=RUBTC', 'transactions');    
 });
